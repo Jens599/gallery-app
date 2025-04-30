@@ -46,8 +46,7 @@ A modern web application that allows users to manage their photo gallery with an
 - [ ] Image processing queue system
 - [ ] Error handling and logging
 
-## Getting Started
-(To be added as project progresses)
+
 
 
 
