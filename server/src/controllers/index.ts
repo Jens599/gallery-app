@@ -1,5 +1,3 @@
-const auth = require("./auth");
+import { login, signup } from "./auth";
 
-module.exports = {
-  ...auth,
-};
+export { login, signup };

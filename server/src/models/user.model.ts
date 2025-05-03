@@ -1,11 +1,11 @@
 import validator from "validator";
 import { Document, Schema, model, Model } from "mongoose";
 import bcrypt from "bcryptjs";
+import { AppError } from "../middleware/errorHandler";
 
-class UserError extends Error {
+class UserError extends AppError {
   constructor(message: string) {
-    super(message);
-    this.name = "UserError";
+    super(400, message); // Using 400 as these are typically validation/bad request errors
   }
 }
 
@@ -59,16 +59,22 @@ userSchema.statics.signup = async function (
   password: string,
 ): Promise<UserType> {
   if (!username || !email || !password) {
-    throw new UserError("All fields must be filled");
+    throw new AppError(400, "All fields must be filled", {
+      fields: {
+        username: !username ? "missing" : "provided",
+        email: !email ? "missing" : "provided",
+        password: !password ? "missing" : "provided",
+      },
+    });
   }
 
   if (!validator.isEmail(email)) {
-    throw new UserError("Email is not valid");
+    throw new AppError(400, "Email is not valid", { email });
   }
 
   const exists = await this.findOne({ email });
   if (exists) {
-    throw new UserError("Email already exists");
+    throw new AppError(409, "Email already exists", { email });
   }
 
   if (
@@ -80,9 +86,15 @@ userSchema.statics.signup = async function (
       minSymbols: 1,
     })
   ) {
-    throw new UserError(
-      "Password must contain at least 8 characters, including uppercase, lowercase, number and symbol",
-    );
+    throw new AppError(400, "Password is not strong enough", {
+      requirements: {
+        minLength: 8,
+        minLowercase: 1,
+        minUppercase: 1,
+        minNumbers: 1,
+        minSymbols: 1,
+      },
+    });
   }
 
   const salt = await bcrypt.genSalt(10);
@@ -93,9 +105,11 @@ userSchema.statics.signup = async function (
     return user;
   } catch (error) {
     if (error instanceof Error) {
-      throw new UserError(error.message);
+      throw new AppError(500, "Failed to create user", {
+        reason: error.message,
+      });
     }
-    throw new UserError("Failed to create user");
+    throw new AppError(500, "Failed to create user");
   }
 };
 
@@ -104,21 +118,26 @@ userSchema.statics.login = async function (
   password: string,
 ): Promise<UserType> {
   if (!email || !password) {
-    throw new UserError("All fields must be filled");
+    throw new AppError(400, "All fields must be filled", {
+      fields: {
+        email: !email ? "missing" : "provided",
+        password: !password ? "missing" : "provided",
+      },
+    });
   }
 
   if (!validator.isEmail(email)) {
-    throw new UserError("Email is not valid");
+    throw new AppError(400, "Email is not valid", { email });
   }
 
   const user = await this.findOne({ email });
   if (!user) {
-    throw new UserError("Incorrect Email or Password");
+    throw new AppError(401, "Incorrect email or password");
   }
 
   const match = await bcrypt.compare(password, user.password);
   if (!match) {
-    throw new UserError("Incorrect Email or Password");
+    throw new AppError(401, "Incorrect email or password");
   }
 
   return user;

@@ -1,59 +1,75 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { User } from "../models";
-import { UserType } from "../models/user.model";
+import { createToken } from "../utils";
+import { AppError } from "../middleware/errorHandler";
 
-const signup = async (req: Request, res: Response) => {
+const signup = async (req: Request, res: Response, next: NextFunction) => {
   const { username, email, password } = req.body;
 
-  if (!username || !email || !password) {
-    return res
-      .status(400)
-      .json({ error: "Username, email, and password are required" });
-  }
-
   try {
+    if (!username || !email || !password) {
+      throw new AppError(400, "Username, email, and password are required", {
+        fields: {
+          username: !username ? "missing" : "provided",
+          email: !email ? "missing" : "provided",
+          password: !password ? "missing" : "provided",
+        },
+      });
+    }
+
     const user = await User.signup(username, email, password);
+    const token = createToken(user.id);
+
     res.status(201).json({
-      user: {
-        _id: user._id,
-        username: user.username,
-        email: user.email,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
+      status: "success",
+      data: {
+        user: {
+          _id: user._id,
+          username: user.username,
+          email: user.email,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+        },
+        token,
       },
     });
   } catch (err: unknown) {
-    const error = err as Error;
-    if (error.message.includes("email")) {
-      res.status(400).json({ error: "Email already in use" });
-    } else {
-      res.status(400).json({ error: error.message });
-    }
+    next(err);
   }
 };
 
-const login = async (req: Request, res: Response) => {
+const login = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
-    return res.status(400).json({ error: "Email and password are required" });
-  }
-
   try {
+    if (!email || !password) {
+      throw new AppError(400, "Email and password are required", {
+        fields: {
+          email: !email ? "missing" : "provided",
+          password: !password ? "missing" : "provided",
+        },
+      });
+    }
+
     const user = await User.login(email, password);
+    const token = createToken(user.id);
+
     res.status(200).json({
-      user: {
-        _id: user._id,
-        username: user.username,
-        email: user.email,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
+      status: "success",
+      data: {
+        user: {
+          _id: user._id,
+          username: user.username,
+          email: user.email,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+        },
+        token,
       },
     });
   } catch (err: unknown) {
-    const error = err as Error;
-    res.status(401).json({ error: error.message });
+    next(err);
   }
 };
 
-module.exports = { login, signup };
+export { login, signup };

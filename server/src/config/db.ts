@@ -1,22 +1,24 @@
 import mongoose from "mongoose";
+import chalk from "chalk";
 import { config } from "./index";
+import { logger } from "./logger";
 
 export async function connectDB(): Promise<void> {
   try {
     await mongoose.connect(config.db.url);
-    console.log("✅ Connected to MongoDB");
+    logger.info(chalk.green("✅ Connected to MongoDB"));
   } catch (error) {
-    console.error("❌ MongoDB connection error:", error);
+    logger.error(chalk.red("❌ MongoDB connection error:"), error);
     process.exit(1);
   }
 
   // Handle connection events
   mongoose.connection.on("error", (error) => {
-    console.error("MongoDB connection error:", error);
+    logger.error(chalk.red("MongoDB connection error:"), error);
   });
 
   mongoose.connection.on("disconnected", () => {
-    console.log("MongoDB disconnected");
+    logger.warn(chalk.yellow("MongoDB disconnected"));
   });
 
   // Handle process termination
@@ -29,9 +31,9 @@ export async function connectDB(): Promise<void> {
 export async function disconnectDB(): Promise<void> {
   try {
     await mongoose.disconnect();
-    console.log("Disconnected from MongoDB");
+    logger.info(chalk.green("Disconnected from MongoDB"));
   } catch (error) {
-    console.error("MongoDB disconnection error:", error);
+    logger.error(chalk.red("MongoDB disconnection error:"), error);
     process.exit(1);
   }
 }
