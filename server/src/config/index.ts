@@ -9,9 +9,7 @@ const envSchema = z.object({
   MONGODB_URI: z.string().url(),
 
   JWT_SECRET: z.string().min(process.env.NODE_ENV === "development" ? 0 : 32),
-  JWT_EXPIRES_IN: z.string().transform((val: string) => {
-    return val.includes("d") ? val : `${val}d`;
-  }),
+  JWT_EXPIRES_IN: z.number(),
 
   CLIENT_URL: z.string().url(),
 });
