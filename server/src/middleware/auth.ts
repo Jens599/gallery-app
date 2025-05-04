@@ -28,12 +28,23 @@ export const requireAuth = async (
 ) => {
   const { authorization } = req.headers;
 
-  if (!authorization?.startsWith("Bearer ")) {
-    return next(new AppError(401, "Authorization required"));
+  if (!authorization) {
+    return next(new AppError(401, "No authorization header provided"));
+  }
+
+  if (!authorization.startsWith("Bearer ")) {
+    return next(
+      new AppError(401, "Invalid authorization format. Use 'Bearer <token>'"),
+    );
+  }
+
+  const token = authorization.split(" ")[1];
+
+  if (!token || token === "null" || token === "undefined") {
+    return next(new AppError(401, "No token provided"));
   }
 
   try {
-    const token = authorization.split(" ")[1];
     const { id } = jwt.verify(token, config.jwt.secret) as JwtPayload;
 
     const user = await User.findById(id);
@@ -48,6 +59,9 @@ export const requireAuth = async (
     };
     next();
   } catch (error) {
-    next(new AppError(401, "Invalid token"));
+    if (error instanceof jwt.JsonWebTokenError) {
+      return next(new AppError(401, "Invalid or expired token"));
+    }
+    next(new AppError(401, "Authentication failed"));
   }
 };

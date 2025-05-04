@@ -8,9 +8,10 @@ A modern web application that allows users to manage their photo gallery with an
 ### 1. Project Setup
 - [x] Initialize project with Next.js and TypeScript
 - [x] Set up project structure and directories
-- [x] Configure Prettier
+- [x] Configure Prettier and ESLint
 - [x] Set up CSS framework (Tailwind CSS)
 - [x] Create basic component architecture
+- [x] Set up theme provider and dark mode support
 
 ### 2. Core Features
 - [ ] Image Upload System

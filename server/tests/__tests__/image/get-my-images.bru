@@ -1,0 +1,36 @@
+meta {
+  name: get-my-images
+  type: http
+  seq: 7
+}
+
+get {
+  url: http://localhost:3001/api/images/me
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
+
+tests {
+  test("should return 200 status code", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("should return success response with images array", function() {
+    const body = res.getBody();
+    expect(body.status).to.equal("success");
+    expect(body.data.images).to.be.an("array");
+    expect(body.data.images.length).to.be.at.least(1);
+    
+    const image = body.data.images[0];
+    expect(image._id).to.exist;
+    expect(image.title).to.exist;
+    expect(image.url).to.exist;
+    expect(image.userId).to.equal(bru.getEnvVar("userId"));
+    expect(image.createdAt).to.exist;
+    expect(image.updatedAt).to.exist;
+  });
+}

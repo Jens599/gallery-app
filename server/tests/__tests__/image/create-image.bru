@@ -1,0 +1,65 @@
+meta {
+  name: create-image
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:3001/api/images
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "url": "https://example.com/test-image.jpg",
+    "title": "Test Image Title",
+    "size": 1024000,
+    "mimeType": "image/jpeg",
+    "width": 1920,
+    "height": 1080
+  }
+}
+
+tests {
+    // First check if we have a token
+    const hasToken = bru.getEnvVar("token") !== null && bru.getEnvVar("token") !== "null" && bru.getEnvVar("token") !== undefined;
+
+    if (!hasToken) {
+        // Tests for unauthenticated requests
+        test("Should return 401 status code when not authenticated", () => {
+            expect(res.status).to.equal(401);
+        });
+
+        test("Should return error response when not authenticated", () => {
+            expect(res.body.status).to.equal("error");
+            expect(res.body.message).to.exist;
+        });
+    } else {
+        // Tests for authenticated requests
+        test("Status code is 201 when authenticated", () => {
+            expect(res.status).to.equal(201);
+        });
+
+        test("Response has success status when authenticated", () => {
+            expect(res.body.status).to.equal("success");
+        });
+
+        test("Response has image data when authenticated", () => {
+            expect(res.body.data.image).to.exist;
+            expect(res.body.data.image.title).to.equal("Test Image Title");
+            expect(res.body.data.image.url).to.equal("https://example.com/test-image.jpg");
+            expect(res.body.data.image.size).to.equal(1024000);
+            expect(res.body.data.image.mimeType).to.equal("image/jpeg");
+            expect(res.body.data.image.dimensions.width).to.equal(1920);
+            expect(res.body.data.image.dimensions.height).to.equal(1080);
+            expect(res.body.data.image._id).to.exist;
+            expect(res.body.data.image.userId).to.equal(bru.getEnvVar("userId"));
+            expect(res.body.data.image.createdAt).to.exist;
+            expect(res.body.data.image.updatedAt).to.exist;
+
+            // Save the image ID for later tests only if we successfully created an image
+            bru.setEnvVar("imageId", res.body.data.image._id);
+        });
+    }
+}

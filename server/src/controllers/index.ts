@@ -1,3 +1,11 @@
-import { login, signup } from "./auth";
+import { login, signup, deleteUser } from "./auth";
+import {
+  createImage,
+  deleteImage,
+  getImage,
+  getMyImages,
+  updateImage,
+} from "./image.controller";
 
-export { login, signup };
+export { login, signup, deleteUser };
+export { createImage, deleteImage, getImage, getMyImages, updateImage };

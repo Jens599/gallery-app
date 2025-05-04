@@ -1,0 +1,46 @@
+meta {
+  name: signup
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:3001/api/auth/signup
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "username": "testuser2",
+    "email": "test2@example.com",
+    "password": "Test123!@#"
+  }
+}
+
+tests {
+  test("should return 201 status code", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+
+  test("should return success response with user data", function() {
+    const body = res.getBody();
+    expect(body.status).to.equal("success");
+    expect(body.data.user).to.exist;
+    expect(body.data.user.username).to.equal("testuser2");
+    expect(body.data.user.email).to.equal("test2@example.com");
+    expect(body.data.user._id).to.exist;
+    expect(body.data.user.createdAt).to.exist;
+    expect(body.data.user.updatedAt).to.exist;
+  });
+
+  test("should return valid auth token", function() {
+    const body = res.getBody();
+    expect(body.data.token).to.exist;
+    expect(body.data.token).to.be.a("string");
+  });
+
+  // Save auth token and user ID for later tests
+  bru.setEnvVar("token", res.getBody().data.token)
+  bru.setEnvVar("userId", res.getBody().data.user._id)
+}

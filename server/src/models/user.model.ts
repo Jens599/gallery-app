@@ -3,12 +3,6 @@ import { Document, Schema, model, Model } from "mongoose";
 import bcrypt from "bcryptjs";
 import { AppError } from "../middleware/errorHandler";
 
-class UserError extends AppError {
-  constructor(message: string) {
-    super(400, message); // Using 400 as these are typically validation/bad request errors
-  }
-}
-
 export interface UserType extends Document {
   username: string;
   email: string;
@@ -61,9 +55,9 @@ userSchema.statics.signup = async function (
   if (!username || !email || !password) {
     throw new AppError(400, "All fields must be filled", {
       fields: {
-        username: !username ? "missing" : "provided",
-        email: !email ? "missing" : "provided",
-        password: !password ? "missing" : "provided",
+        username: !username ? 0 : 1,
+        email: !email ? 0 : 1,
+        password: !password ? 0 : 1,
       },
     });
   }
@@ -120,8 +114,8 @@ userSchema.statics.login = async function (
   if (!email || !password) {
     throw new AppError(400, "All fields must be filled", {
       fields: {
-        email: !email ? "missing" : "provided",
-        password: !password ? "missing" : "provided",
+        email: !email ? 0 : 1,
+        password: !password ? 0 : 1,
       },
     });
   }
@@ -142,5 +136,7 @@ userSchema.statics.login = async function (
 
   return user;
 };
+
+
 
 export const User = model<UserType, UserModel>("User", userSchema);
