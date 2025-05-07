@@ -12,7 +12,7 @@ interface LoginResponse {
 }
 
 const login = async (email: string, password: string) => {
-  const response = await fetch("/api/auth/login", {
+  const response = await fetch("http://localhost:3001/api/auth/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -26,6 +26,12 @@ const login = async (email: string, password: string) => {
   }
 
   const data = await response.json();
+
+  localStorage.setItem("username", data.data.user.username);
+  localStorage.setItem("email", data.data.user.email);
+  localStorage.setItem("token", data.data.token);
+
+  window.dispatchEvent(new Event("authChange"));
 
   return {
     status: data.status,

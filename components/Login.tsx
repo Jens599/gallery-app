@@ -1,6 +1,7 @@
 "use client";
 
 import { useLogin } from "@/lib/auth";
+import { useRouter } from "next/navigation";
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,11 +19,12 @@ const formSchema = z.object({
 });
 
 const fields = [
-  { name: "email", placeholder: "example@example.com" },
-  { name: "password", placeholder: "Password123!" },
+  { name: "email" as const, placeholder: "example@example.com" },
+  { name: "password" as const, placeholder: "Password123!" },
 ];
 
 const Login = () => {
+  const router = useRouter();
   const { mutate: login, isPending, error } = useLogin();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -30,18 +32,32 @@ const Login = () => {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    login(
+      { email: values.email, password: values.password },
+      {
+        onSuccess: () => {
+          router.push("/");
+          router.refresh();
+        },
+      },
+    );
   }
 
   const handleLogin = async () => {};
 
   return (
-    <AuthForm
-      formName={"Login"}
-      form={form}
-      onSubmit={onSubmit}
-      fields={fields}
-    />
+    <>
+      <AuthForm
+        formName={"Login"}
+        form={form}
+        onSubmit={onSubmit}
+        isPending={isPending}
+        fields={fields}
+      />
+      {error?.message && (
+        <p className="text-destructive mt-2">{error.message}</p>
+      )}
+    </>
   );
 };
 export default Login;
