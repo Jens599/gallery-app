@@ -43,8 +43,6 @@ const Login = () => {
     );
   }
 
-  const handleLogin = async () => {};
-
   return (
     <>
       <AuthForm

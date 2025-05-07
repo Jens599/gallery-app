@@ -1,18 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
-
-interface LoginResponse {
-  status: string;
-  data: {
-    user: {
-      username: string;
-      email: string;
-      token: string;
-    };
-  };
-}
+import { AUTH_URLS } from "./urls";
 
 const login = async (email: string, password: string) => {
-  const response = await fetch("http://localhost:3001/api/auth/login", {
+  const response = await fetch(AUTH_URLS.LOGIN, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -32,22 +22,48 @@ const login = async (email: string, password: string) => {
   localStorage.setItem("token", data.data.token);
 
   window.dispatchEvent(new Event("authChange"));
+};
 
-  return {
-    status: data.status,
-    data: {
-      user: {
-        username: data.data.user.username,
-        email: data.data.user.email,
-        token: data.data.token,
-      },
+const signup = async (username: string, email: string, password: string) => {
+  const response = await fetch(AUTH_URLS.SIGNUP, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
     },
-  } as LoginResponse;
+    body: JSON.stringify({ username, email, password }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "Failed Signup");
+  }
+
+  const data = await response.json();
+
+  localStorage.setItem("username", data.data.user.username);
+  localStorage.setItem("email", data.data.user.email);
+  localStorage.setItem("token", data.data.token);
+
+  window.dispatchEvent(new Event("authChange"));
 };
 
 export const useLogin = () => {
   return useMutation({
     mutationFn: ({ email, password }: { email: string; password: string }) =>
       login(email, password),
+  });
+};
+
+export const useSignup = () => {
+  return useMutation({
+    mutationFn: ({
+      username,
+      email,
+      password,
+    }: {
+      username: string;
+      email: string;
+      password: string;
+    }) => signup(username, email, password),
   });
 };
