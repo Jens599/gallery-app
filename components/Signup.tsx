@@ -8,6 +8,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import AuthForm from "./AuthForm";
 
+import { toast } from "sonner";
+import { useEffect } from "react";
+
 const formSchema = z
   .object({
     username: z
@@ -60,6 +63,15 @@ const Signup = () => {
 
   const { mutate: signup, isPending, error } = useSignup();
 
+  useEffect(() => {
+    if (error?.message) {
+      toast.error("Uh oh! Something went wrong.", {
+        duration: 5000,
+        description: error.message,
+      });
+    }
+  }, [error]);
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     signup(
       {
@@ -69,8 +81,9 @@ const Signup = () => {
       },
       {
         onSuccess: () => {
-          router.push("/");
+          router.push("/gallery");
           router.refresh();
+          window.scrollTo({ top: 0, behavior: "smooth" });
         },
       },
     );
@@ -85,9 +98,6 @@ const Signup = () => {
         isPending={isPending}
         fields={fields}
       />
-      {error?.message && (
-        <p className="text-destructive mt-2">{error.message}</p>
-      )}
     </>
   );
 };

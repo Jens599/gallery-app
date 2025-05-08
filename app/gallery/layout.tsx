@@ -1,75 +1,52 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { useDropzone } from "react-dropzone";
-import { Upload } from "lucide-react";
+import { UploadDropzone } from "@/utils/uploadthing";
+import { cn } from "@/lib/utils";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import { Button } from "@/components/ui/button";
+import { ArrowUp } from "lucide-react";
 
 export default function GalleryUploader({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const [isDragging, setIsDragging] = useState(false);
-
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    const imageFiles = acceptedFiles.filter((file) =>
-      file.type.startsWith("image/"),
-    );
-  }, []);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      "image/*": [],
-    },
-    multiple: true,
-    noClick: true,
-    noKeyboard: true,
-  });
-
-  useEffect(() => {
-    const handleDragOver = (e: DragEvent) => {
-      e.preventDefault();
-      setIsDragging(true);
-    };
-
-    const handleDragLeave = (e: DragEvent) => {
-      e.preventDefault();
-      if (e.relatedTarget === null) {
-        setIsDragging(false);
-      }
-    };
-
-    const handleDrop = () => {
-      setIsDragging(false);
-    };
-
-    document.addEventListener("dragover", handleDragOver);
-    document.addEventListener("dragleave", handleDragLeave);
-    document.addEventListener("drop", handleDrop);
-
-    return () => {
-      document.removeEventListener("dragover", handleDragOver);
-      document.removeEventListener("dragleave", handleDragLeave);
-      document.removeEventListener("drop", handleDrop);
-    };
-  }, []);
-
-  if (!isDragging && !isDragActive) {
-    return <div className="">{children}</div>;
-  }
-
   return (
-    <div
-      {...getRootProps()}
-      className="bg-background/80 fixed inset-0 z-50 flex items-center justify-center p-8 backdrop-blur-sm"
-    >
-      <input {...getInputProps()} />
-      <div className="border-primary bg-background/50 flex w-full max-w-3xl flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed p-12 text-center">
-        <Upload className="text-primary h-16 w-16" />
-        <p className="text-2xl font-medium">Drop images here to upload</p>
-        <p className="text-muted-foreground">
-          Your files will be uploaded automatically
-        </p>
-      </div>
-    </div>
+    <>
+      <ProtectedRoute>
+        <div className="grid place-items-center">
+          <UploadDropzone
+            endpoint="imageUploader"
+            onClientUploadComplete={(res) => {
+              // Do something with the response
+              console.log("Files: ", res);
+              alert("Upload Completed");
+            }}
+            onUploadError={(error: Error) => {
+              // Do something with the error.
+              alert(`ERROR! ${error.message}`);
+            }}
+            className={cn([
+              "ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 ut-button:px-8",
+              "ut-upload-icon:size-20",
+              "ut-ready:w-1/2 ut-ready:bg-gray-900/80 ut-ready:my-8 ut-ready:py-8",
+              "ut-readying:w-1/2 ut-readying:bg-gray-900/80 ut-readying:my-8 ut-readying:py-8",
+              "ut-uploading:w-1/2 ut-uploading:bg-gray-900/80 ut-uploading:my-8 ut-uploading:py-8",
+              "ut-button:mt-4",
+            ])}
+          />
+        </div>
+        {children}
+        <Button
+          className="fixed right-10 bottom-10 size-10 scale-150 rounded-full"
+          onClick={() => {
+            window.scrollTo({
+              top: 0,
+              behavior: "smooth",
+            });
+          }}
+        >
+          <ArrowUp />
+        </Button>
+      </ProtectedRoute>
+    </>
   );
 }

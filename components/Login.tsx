@@ -2,11 +2,13 @@
 
 import { useLogin } from "@/lib/auth";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import AuthForm from "./AuthForm";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   email: z
@@ -27,6 +29,15 @@ const Login = () => {
   const router = useRouter();
   const { mutate: login, isPending, error } = useLogin();
 
+  useEffect(() => {
+    if (error?.message) {
+      toast.error("Uh oh! Something went wrong.", {
+        duration: 5000,
+        description: error.message,
+      });
+    }
+  }, [error]);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
@@ -36,8 +47,9 @@ const Login = () => {
       { email: values.email, password: values.password },
       {
         onSuccess: () => {
-          router.push("/");
+          router.push("/gallery");
           router.refresh();
+          window.scrollTo({ top: 0, behavior: "smooth" });
         },
       },
     );
@@ -52,9 +64,6 @@ const Login = () => {
         isPending={isPending}
         fields={fields}
       />
-      {error?.message && (
-        <p className="text-destructive mt-2">{error.message}</p>
-      )}
     </>
   );
 };

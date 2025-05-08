@@ -14,7 +14,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -22,7 +21,7 @@ import {
 } from "@/components/ui/form";
 
 import { Input } from "./ui/input";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { z } from "zod";
 import { UseFormReturn, Path } from "react-hook-form";
 import { useRouter } from "next/navigation";
@@ -44,21 +43,6 @@ const AuthForm = <T extends z.ZodType>({
 }: AuthFormProps<T>) => {
   const [showPassword, setShowPassword] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
-
-  const router = useRouter();
-
-  useEffect(() => {
-    try {
-      const token = localStorage.getItem("token");
-      if (token) {
-        router.push("/");
-        router.refresh();
-      }
-    } catch (error) {
-      setAuthError("Failed to check authentication status");
-      console.error("Auth check error:", error);
-    }
-  }, [router]);
 
   return (
     <Card>

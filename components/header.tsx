@@ -5,6 +5,7 @@ import { ModeToggle } from "./theme-toggle";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
 
 interface User {
   username: string;
@@ -21,6 +22,8 @@ const Header = () => {
   });
   const [mounted, setMounted] = useState(false);
 
+  const router = useRouter();
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("username");
@@ -30,6 +33,8 @@ const Header = () => {
       email: "",
       token: "",
     });
+
+    router.push("/");
   };
 
   useEffect(() => {
