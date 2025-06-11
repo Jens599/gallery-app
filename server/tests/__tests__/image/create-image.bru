@@ -16,8 +16,6 @@ body:json {
     "title": "Test Image Title",
     "size": 1024000,
     "mimeType": "image/jpeg",
-    "width": 1920,
-    "height": 1080
   }
 }
 
@@ -51,8 +49,6 @@ tests {
             expect(res.body.data.image.url).to.equal("https://example.com/test-image.jpg");
             expect(res.body.data.image.size).to.equal(1024000);
             expect(res.body.data.image.mimeType).to.equal("image/jpeg");
-            expect(res.body.data.image.dimensions.width).to.equal(1920);
-            expect(res.body.data.image.dimensions.height).to.equal(1080);
             expect(res.body.data.image._id).to.exist;
             expect(res.body.data.image.userId).to.equal(bru.getEnvVar("userId"));
             expect(res.body.data.image.createdAt).to.exist;
