@@ -85,7 +85,7 @@ const AuthForm = <T extends z.ZodType>({
                           />
                           <button
                             type="button"
-                            className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1 hover:bg-gray-100"
+                            className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1 hover:bg-red-900"
                             onClick={() => setShowPassword((prev) => !prev)}
                             aria-label={
                               showPassword ? "Hide password" : "Show password"
