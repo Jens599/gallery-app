@@ -5,24 +5,58 @@ import { cn } from "@/lib/utils";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { Button } from "@/components/ui/button";
 import { ArrowUp } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function GalleryUploader({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const [token, setToken] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    setToken(localStorage.getItem("token"));
+  }, []);
+
+  if (token === null) {
+    return (
+      <div className="grid h-screen place-items-center">
+        <p>Loading user session...</p>
+      </div>
+    );
+  }
+
+  const uploadHeaders = token
+    ? { Authorization: `Bearer ${token}` }
+    : undefined;
+
   return (
     <>
       <ProtectedRoute>
         <div className="grid place-items-center">
           <UploadDropzone
             endpoint="imageUploader"
+            headers={uploadHeaders}
             onClientUploadComplete={(res) => {
-              // Do something with the response
               console.log("Files: ", res);
-              alert("Upload Completed");
+              toast.success("Upload Completed successfully!");
+
+              queryClient.invalidateQueries({ queryKey: ["images"] });
             }}
             onUploadError={(error: Error) => {
-              // Do something with the error.
-              alert(`ERROR! ${error.message}`);
+              console.error("Upload error:", error);
+
+              toast.error(`Upload Failed: ${error.message}`);
+
+              if (
+                error.message.includes("Unauthorized") ||
+                error.message.includes("token")
+              ) {
+                toast.warning(
+                  "Please log in again. Your session might have expired.",
+                );
+              }
             }}
             className={cn([
               "ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 ut-button:px-8",
