@@ -137,6 +137,4 @@ userSchema.statics.login = async function (
   return user;
 };
 
-
-
 export const User = model<UserType, UserModel>("User", userSchema);

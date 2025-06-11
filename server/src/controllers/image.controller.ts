@@ -9,7 +9,7 @@ export const createImage = async (
   next: NextFunction,
 ) => {
   try {
-    const { url, title, size, mimeType, width, height } = req.body;
+    const { url, title, size, mimeType } = req.body;
 
     if (!req.user?._id) {
       return next(new AppError(401, "User not authenticated"));
@@ -21,8 +21,6 @@ export const createImage = async (
       req.user._id.toString(),
       size,
       mimeType,
-      width,
-      height,
     );
 
     res.status(201).json({
