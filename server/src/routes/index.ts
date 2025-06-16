@@ -1,3 +1,4 @@
+import { updateURL } from "./../controllers/image.controller";
 import { Router } from "express";
 import {
   createImage,
@@ -27,7 +28,8 @@ router.post("/images", createImage);
 router.get("/images/me", getMyImages);
 router.get("/images/:id", getImage);
 router.put("/images/:id", updateImage);
-router.delete("/images/:id", deleteImage);
+router.delete("/images/:id", requireAuth, deleteImage);
+router.patch("/image/addURL/:id", requireAuth, updateURL);
 
 // Mount debug routes only in development
 if (config.server.isDevelopment) {

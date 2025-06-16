@@ -115,10 +115,7 @@ export const deleteImage = async (
 
     await image.deleteOne();
 
-    res.status(204).json({
-      status: "success",
-      data: null,
-    });
+    res.status(204).end();
   } catch (error) {
     next(error);
   }
@@ -158,5 +155,43 @@ export const getMyImages = async (
     });
   } catch (error) {
     next(error);
+  }
+};
+
+export const updateURL = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    if (!req.user?._id) {
+      return next(new AppError(401, "User not authenticated"));
+    }
+
+    const existingImage = await Image.findById(req.params.id);
+
+    if (!existingImage) {
+      return next(new AppError(404, "Image not found"));
+    }
+
+    if (existingImage.userId.toString() !== req.user._id.toString()) {
+      return next(new AppError(403, "Forbidden: You do not own this image"));
+    }
+
+    const image = await Image.findByIdAndUpdate(
+      req.params.id,
+      { $push: { url: req.body.url } },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+
+    res.status(200).json({
+      status: "success",
+      data: image,
+    });
+  } catch (err) {
+    next(err);
   }
 };

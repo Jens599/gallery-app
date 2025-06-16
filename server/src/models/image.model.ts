@@ -9,7 +9,7 @@ const IMAGE_CONSTRAINTS = {
 } as const;
 
 export interface ImageType extends Document {
-  url: string;
+  url: string[];
   title: string;
   userId: string;
   size: number;
@@ -35,7 +35,7 @@ interface ImageModel extends Model<ImageType> {
 const imageSchema = new Schema<ImageType, ImageModel>(
   {
     url: {
-      type: String,
+      type: [String],
       required: [true, "URL is required"],
     },
     title: {
@@ -62,7 +62,7 @@ const imageSchema = new Schema<ImageType, ImageModel>(
 );
 
 imageSchema.statics.createImage = async (
-  url: string,
+  url: string[],
   title: string,
   userId: string,
   size: number,
@@ -82,14 +82,19 @@ imageSchema.statics.createImage = async (
     });
   }
 
+  if (url.length > 2) {
+    throw new AppError(400, "Maximum of 2 URLs allowed per image");
+  }
+
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     throw new AppError(400, "User ID is not valid");
   }
 
   try {
-    new URL(url);
+    // Validate each URL in the array
+    url.forEach(urlStr => new URL(urlStr));
   } catch (error) {
-    throw new AppError(400, "Invalid URL format");
+    throw new AppError(400, "One or more URLs have an invalid format");
   }
 
   if (size > IMAGE_CONSTRAINTS.MAX_FILE_SIZE) {
