@@ -1,7 +1,38 @@
 "use client";
 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { IMAGE_URLS } from "@/lib/urls";
 import { useQuery } from "@tanstack/react-query";
+import { Download } from "lucide-react";
+
+const downloadImage = async (url: string, filename: string) => {
+  try {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    const blobUrl = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = blobUrl;
+    a.download = filename || "download";
+    document.body.appendChild(a);
+    a.click();
+
+    // Cleanup
+    window.URL.revokeObjectURL(blobUrl);
+    document.body.removeChild(a);
+  } catch (error) {
+    console.error("Download failed:", error);
+  }
+};
 
 interface Image {
   _id: string;
@@ -79,7 +110,7 @@ const GalleryPage = () => {
   const images = data?.data.images || [];
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="relative container mx-auto px-4 py-8">
       <h1 className="mb-8 text-center text-3xl font-bold">My Gallery</h1>
 
       {images.length === 0 ? (
@@ -91,29 +122,69 @@ const GalleryPage = () => {
       ) : (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {images.map((image) => (
-            <div
-              key={image._id}
-              className="overflow-hidden rounded-lg shadow-md transition-shadow duration-300 hover:shadow-lg"
-            >
-              <img
-                src={image.url}
-                alt={image.title}
-                className="h-48 w-full object-cover"
-                loading="lazy"
-              />
-              <div className="p-4">
-                <h3 className="truncate font-medium text-gray-900">
-                  {image.title}
-                </h3>
-                <p className="text-sm text-gray-500">
-                  {new Date(image.createdAt).toLocaleDateString()}
-                </p>
-                <p className="mt-1 text-xs text-gray-400">
-                  {Math.round(image.size / 1024)} KB •{" "}
-                  {image.mimeType.split("/")[1]?.toUpperCase()}
-                </p>
-              </div>
-            </div>
+            <Dialog>
+              <DialogTrigger>
+                <div
+                  key={image._id}
+                  className="overflow-hidden rounded-lg shadow-md transition-shadow duration-300 hover:shadow-lg"
+                >
+                  <img
+                    src={image.url}
+                    alt={image.title}
+                    className="h-48 w-full object-cover"
+                    loading="lazy"
+                  />
+                  <div className="p-4">
+                    <h3 className="text-foreground truncate font-medium">
+                      {image.title}
+                    </h3>
+                    <p className="text-primary text-sm">
+                      {new Date(image.createdAt).toLocaleDateString()}
+                    </p>
+                    <p className="text-accent-foreground mt-1 text-xs">
+                      {Math.round(image.size / 1024)} KB •{" "}
+                      {image.mimeType.split("/")[1]?.toUpperCase()}
+                    </p>
+                  </div>
+                </div>
+              </DialogTrigger>
+              <DialogContent className="flex h-[90vh] max-h-[90vh] flex-col sm:max-w-[90vw]">
+                <DialogHeader className="flex-shrink-0">
+                  <DialogTitle className="text-xl font-semibold">
+                    {image.title}
+                  </DialogTitle>
+                  <DialogDescription className="text-muted-foreground text-sm">
+                    Uploaded on {new Date(image.createdAt).toLocaleDateString()}
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="relative flex-1 overflow-hidden">
+                  <div className="flex h-full items-center justify-center p-4">
+                    <img
+                      src={image.url}
+                      alt={image.title}
+                      className="max-h-full max-w-full object-contain"
+                    />
+                  </div>
+                </div>
+                <DialogFooter className="flex-shrink-0 sm:justify-between">
+                  <div className="text-muted-foreground text-sm">
+                    {Math.round(image.size / 1024)} KB •{" "}
+                    {image.mimeType.split("/")[1]?.toUpperCase()}
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() =>
+                      downloadImage(image.url, image.title || "download")
+                    }
+                    className="gap-2"
+                  >
+                    <Download />
+                    Download
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           ))}
         </div>
       )}

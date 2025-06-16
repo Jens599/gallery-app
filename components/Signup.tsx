@@ -81,9 +81,9 @@ const Signup = () => {
       },
       {
         onSuccess: () => {
-          router.push("/gallery");
-          router.refresh();
-          window.scrollTo({ top: 0, behavior: "smooth" });
+          toast.success("Signed up successfully!", {
+            duration: 5000,
+          });
         },
       },
     );

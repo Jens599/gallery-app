@@ -47,9 +47,9 @@ const Login = () => {
       { email: values.email, password: values.password },
       {
         onSuccess: () => {
-          router.push("/gallery");
-          router.refresh();
-          window.scrollTo({ top: 0, behavior: "smooth" });
+          toast.success("Logged in successfully!", {
+            duration: 5000,
+          });
         },
       },
     );

@@ -112,19 +112,13 @@ const AuthForm = <T extends z.ZodType>({
                 )}
               />
             ))}
-            <Button type="submit" disabled={isPending} aria-busy={isPending}>
+            <Button type="submit" disabled={isPending} aria-busy={isPending} className="w-full">
               {isPending ? "Submitting..." : "Submit"}
             </Button>
           </form>
         </Form>
       </CardContent>
-      <CardFooter className="flex justify-center">
-        <p className="text-sm text-gray-500">
-          {formName === "Login"
-            ? "Don't have an account?"
-            : "Already have an account?"}
-        </p>
-      </CardFooter>
+      <CardFooter className="flex justify-center"></CardFooter>
     </Card>
   );
 };
