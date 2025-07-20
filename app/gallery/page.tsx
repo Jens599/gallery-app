@@ -60,6 +60,14 @@ interface ApiResponse {
   };
 }
 
+// Utility to format file size
+function formatFileSize(size: number): string {
+  if (size >= 1024 * 1024) {
+    return (size / (1024 * 1024)).toFixed(2) + " MB";
+  }
+  return Math.round(size / 1024).toLocaleString() + " KB";
+}
+
 const GalleryPage = () => {
   const { data, isLoading, isError, error } = useQuery<ApiResponse, Error>({
     queryKey: ["images"],
@@ -129,7 +137,7 @@ const GalleryPage = () => {
                   className="overflow-hidden rounded-lg shadow-md transition-shadow duration-300 hover:shadow-lg"
                 >
                   <img
-                    src={image.url}
+                    src={image.url[0]}
                     alt={image.title}
                     className="h-48 w-full object-cover"
                     loading="lazy"
@@ -142,7 +150,7 @@ const GalleryPage = () => {
                       {new Date(image.createdAt).toLocaleDateString()}
                     </p>
                     <p className="text-accent-foreground mt-1 text-xs">
-                      {Math.round(image.size / 1024)} KB •{" "}
+                      {formatFileSize(image.size)} •{" "}
                       {image.mimeType.split("/")[1]?.toUpperCase()}
                     </p>
                   </div>
@@ -160,7 +168,7 @@ const GalleryPage = () => {
                 <div className="relative flex-1 overflow-hidden">
                   <div className="flex h-full items-center justify-center p-4">
                     <img
-                      src={image.url}
+                      src={image.url[0]}
                       alt={image.title}
                       className="max-h-full max-w-full object-contain"
                     />
@@ -168,14 +176,14 @@ const GalleryPage = () => {
                 </div>
                 <DialogFooter className="flex-shrink-0 sm:justify-between">
                   <div className="text-muted-foreground text-sm">
-                    {Math.round(image.size / 1024)} KB •{" "}
+                    {formatFileSize(image.size)} •{" "}
                     {image.mimeType.split("/")[1]?.toUpperCase()}
                   </div>
                   <Button
                     type="button"
                     variant="outline"
                     onClick={() =>
-                      downloadImage(image.url, image.title || "download")
+                      downloadImage(image.url[1], image.title || "download")
                     }
                     className="gap-2"
                   >

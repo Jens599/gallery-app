@@ -8,12 +8,21 @@ import { ArrowUp } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
+import imageCompression from "browser-image-compression";
+import { v4 as uuidv4 } from "uuid";
+import { genUploader } from "uploadthing/client";
+import type { OurFileRouter } from "@/app/api/uploadthing/core";
+import { saveImageMetadata } from "@/lib/upload-utils";
 
 export default function GalleryUploader({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const [token, setToken] = useState<string | null>(null);
+  const [uploadId, setUploadId] = useState<string>(uuidv4());
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [uploading, setUploading] = useState(false);
   const queryClient = useQueryClient();
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
   useEffect(() => {
     setToken(localStorage.getItem("token"));
@@ -31,42 +40,169 @@ export default function GalleryUploader({
     ? { Authorization: `Bearer ${token}` }
     : undefined;
 
+  async function createWebpPreview(file: File): Promise<File> {
+    let maxWidthOrHeight: number = 720; // Fixed preview size
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(file);
+    await new Promise((resolve) => {
+      img.onload = resolve;
+    });
+    URL.revokeObjectURL(img.src);
+    const options = {
+      maxWidthOrHeight,
+      fileType: "image/webp",
+      initialQuality: 0.8,
+      useWebWorker: true,
+    };
+    const compressed = await imageCompression(file, options);
+    const webpFile = new File(
+      [compressed],
+      file.name.replace(/\.[^.]+$/, ".webp"),
+      {
+        type: "image/webp",
+      },
+    );
+    console.log("webpFile", webpFile);
+    return webpFile;
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      setSelectedFiles(files);
+      setPreviewUrls(files.map((file) => URL.createObjectURL(file)));
+    }
+  };
+
+  const { uploadFiles } = genUploader<OurFileRouter>();
+
+  const handleParallelUpload = async () => {
+    setUploading(true);
+    try {
+      for (const file of selectedFiles) {
+        const preview = await createWebpPreview(file);
+        // Upload both files in parallel
+        const [previewResult, originalResult] = await Promise.all([
+          uploadFiles("imageUploader", {
+            files: [preview],
+            headers: uploadHeaders,
+          }),
+          uploadFiles("imageUploader", {
+            files: [file],
+            headers: uploadHeaders,
+          }),
+        ]);
+        // Save metadata for the original file only
+        if (
+          originalResult &&
+          originalResult[0] &&
+          previewResult &&
+          previewResult[0]
+        ) {
+          // Remove extension from name
+          const nameWithoutExt = originalResult[0].name.replace(/\.[^.]+$/, "");
+          await saveImageMetadata(
+            {
+              url: [previewResult[0].ufsUrl, originalResult[0].ufsUrl],
+              name: nameWithoutExt,
+              key: originalResult[0].key,
+              size: originalResult[0].size,
+              type: originalResult[0].type,
+            },
+            token,
+          );
+        }
+        toast.success("Both files uploaded!");
+      }
+      setUploadId(uuidv4());
+      queryClient.invalidateQueries({ queryKey: ["images"] });
+      setSelectedFiles([]);
+      setPreviewUrls([]);
+    } catch (error: any) {
+      console.error("Upload error:", error);
+      toast.error(`Upload Failed: ${error.message}`);
+      if (
+        error.message.includes("Unauthorized") ||
+        error.message.includes("token")
+      ) {
+        toast.warning("Please log in again. Your session might have expired.");
+      }
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <>
       <ProtectedRoute>
-        <div className="grid place-items-center">
-          <UploadDropzone
-            endpoint="imageUploader"
-            headers={uploadHeaders}
-            onClientUploadComplete={(res) => {
-              console.log("Files: ", res);
-              toast.success("Upload Completed successfully!");
-
-              queryClient.invalidateQueries({ queryKey: ["images"] });
-            }}
-            onUploadError={(error: Error) => {
-              console.error("Upload error:", error);
-
-              toast.error(`Upload Failed: ${error.message}`);
-
-              if (
-                error.message.includes("Unauthorized") ||
-                error.message.includes("token")
-              ) {
-                toast.warning(
-                  "Please log in again. Your session might have expired.",
-                );
-              }
-            }}
-            className={cn([
-              "ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 ut-button:px-8",
-              "ut-upload-icon:size-20",
-              "ut-ready:w-1/2 ut-ready:bg-gray-900/80 ut-ready:my-8 ut-ready:py-8",
-              "ut-readying:w-1/2 ut-readying:bg-gray-900/80 ut-readying:my-8 ut-readying:py-8",
-              "ut-uploading:w-1/2 ut-uploading:bg-gray-900/80 ut-uploading:my-8 ut-uploading:py-8",
-              "ut-button:mt-4",
-            ])}
-          />
+        <div className="flex min-h-[40vh] flex-col items-center justify-center">
+          <div className="bg-card mx-auto flex w-full max-w-md flex-col items-center justify-center rounded-xl p-8 shadow-lg">
+            {/* Preview or Cloud Upload Icon */}
+            {previewUrls.length > 0 ? (
+              <div className="mb-4 flex w-full flex-wrap justify-center gap-2">
+                {previewUrls.map((url, idx) => (
+                  <img
+                    key={
+                      selectedFiles[idx]?.name
+                        ? `${selectedFiles[idx].name}-${idx}`
+                        : idx
+                    }
+                    src={url}
+                    alt={`preview-${idx}`}
+                    className="border-border bg-muted h-24 w-24 rounded border object-cover"
+                  />
+                ))}
+              </div>
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="text-primary mb-4 h-10 w-10"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 16v-4m0 0-2 2m2-2 2 2m6 2a4 4 0 00-3.8-5.995A5.5 5.5 0 006.5 13.5a4.5 4.5 0 00.5 8.995h10a4 4 0 004-4z"
+                />
+              </svg>
+            )}
+            <div className="text-card-foreground text-center text-lg font-semibold">
+              Choose files or drag and drop
+            </div>
+            <div className="text-muted-foreground mb-4 text-center text-sm">
+              Image (4MB)
+            </div>
+            <input
+              id="gallery-upload-input"
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+            <label htmlFor="gallery-upload-input" className="w-full">
+              <span className="bg-destructive text-primary-foreground inline-block w-full cursor-pointer rounded px-6 py-2 text-center font-medium transition hover:opacity-90 active:scale-95">
+                Choose File
+              </span>
+            </label>
+            <Button
+              onClick={handleParallelUpload}
+              disabled={uploading || selectedFiles.length === 0}
+              className="mt-4 w-full"
+            >
+              {uploading
+                ? "Uploading..."
+                : "Upload Selected Images (Original + WebP)"}
+            </Button>
+            {selectedFiles.length > 0 && (
+              <div className="mt-4 flex flex-wrap justify-center gap-2">
+                {selectedFiles.map((file, idx) => null)}
+              </div>
+            )}
+          </div>
         </div>
         {children}
         <Button

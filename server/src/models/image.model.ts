@@ -4,7 +4,7 @@ import { AppError } from "../middleware/errorHandler";
 const IMAGE_CONSTRAINTS = {
   MIN_TITLE_LENGTH: 3,
   MAX_TITLE_LENGTH: 100,
-  MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB in bytes
+  MAX_FILE_SIZE: 32 * 1024 * 1024, // 32MB in bytes
   ALLOWED_MIME_TYPES: ["image/jpeg", "image/png", "image/webp"] as const,
 } as const;
 
@@ -92,7 +92,7 @@ imageSchema.statics.createImage = async (
 
   try {
     // Validate each URL in the array
-    url.forEach(urlStr => new URL(urlStr));
+    url.forEach((urlStr) => new URL(urlStr));
   } catch (error) {
     throw new AppError(400, "One or more URLs have an invalid format");
   }

@@ -1,8 +1,7 @@
+import jwt from "jsonwebtoken";
+import { NextRequest } from "next/server";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
-import jwt from "jsonwebtoken";
-import type { NextRequest } from "next/server";
-import { saveImageMetadata } from "@/lib/upload-utils";
 
 const f = createUploadthing();
 
@@ -48,32 +47,21 @@ export const ourFileRouter = {
   imageUploader: f({
     image: {
       maxFileSize: "32MB",
-      maxFileCount: 10,
+      maxFileCount: 2,
     },
   })
     .middleware(async ({ req }) => {
-      const authResult = await auth(req);
-      return { userId: authResult.id, token: authResult.token };
+      const user = await auth(req);
+
+      if (!user) throw new UploadThingError("Unauthorized");
+
+      return { userId: user.id };
     })
     .onUploadComplete(async ({ metadata, file }) => {
       console.log("Upload complete for userId:", metadata.userId);
-      console.log("File URL:", file.ufsUrl);
-      try {
-        const createdImage = await saveImageMetadata(file, metadata.token);
+      console.log("Files:", file);
 
-        console.log("Image metadata saved to database.", createdImage);
-        return {
-          uploadedBy: metadata.userId,
-          fileUrl: file.ufsUrl,
-          imageId: createdImage._id,
-          imageTitle: createdImage.title,
-        };
-      } catch (dbError) {
-        console.error("Failed to save image metadata after upload:", dbError);
-        throw new UploadThingError(
-          `Post-upload processing failed: ${(dbError as Error).message}`,
-        );
-      }
+      return { uploadedBy: metadata.userId };
     }),
 } satisfies FileRouter;
 
