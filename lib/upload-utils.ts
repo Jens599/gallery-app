@@ -55,17 +55,12 @@ export async function saveImageMetadata(
     const errorData = await response
       .json()
       .catch(() => ({ message: "Unknown error" }));
-    console.error(
-      `Failed to create image in Express API. Status: ${response.status}`,
-      errorData,
-    );
     throw new Error(
       `Failed to save image metadata: ${errorData.message || "Server error"}`,
     );
   }
 
   const result = await response.json();
-  console.log(`Image "${result.title}" saved to DB successfully!`);
   return result;
 }
 
@@ -86,17 +81,12 @@ export async function updateURL(
     const errorData = await response
       .json()
       .catch(() => ({ message: "Unknown error" }));
-    console.error(
-      `Failed to create image in Express API. Status: ${response.status}`,
-      errorData,
-    );
     throw new Error(
       `Failed to save image metadata: ${errorData.message || "Server error"}`,
     );
   }
 
   const result = await response.json();
-  console.log(`URL "${url}" added to image "${result.title}" successfully!`);
   return result;
 }
 
@@ -111,17 +101,12 @@ export async function BGRemoval(url: string, token: string) {
     const errorData = await response
       .json()
       .catch(() => ({ message: "Unknown error" }));
-    console.error(
-      `Failed to create image in Express API. Status: ${response.status}`,
-      errorData,
-    );
     throw new Error(
       `Failed to save image metadata: ${errorData.message || "Server error"}`,
     );
   }
 
   const result = await response.json();
-  console.log(`Image "${result.title}" updated successfully!`);
   return result;
 }
 
@@ -131,7 +116,6 @@ export function useUpdateUrl() {
   return useMutation<ImageType, Error, { url: string; token: string }>({
     mutationFn: ({ url, token }) => updateURL(url, token),
     onSuccess: (data) => {
-      console.log(`Image "${data.title}" updated successfully!`);
       queryClient.invalidateQueries({ queryKey: ["images"] });
     },
     onError: (error) => {
