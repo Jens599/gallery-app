@@ -59,6 +59,12 @@ const Signup = () => {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      username: "",
+      email: "",
+      password: "",
+      confirm_password: "",
+    },
   });
 
   const { mutate: signup, isPending, error } = useSignup();
