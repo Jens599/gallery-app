@@ -10,6 +10,7 @@ const IMAGE_CONSTRAINTS = {
 
 export interface ImageType extends Document {
   url: string[];
+  keys: string[];
   title: string;
   userId: string;
   size: number;
@@ -24,7 +25,8 @@ export interface ImageType extends Document {
 
 interface ImageModel extends Model<ImageType> {
   createImage(
-    url: string,
+    url: string[],
+    keys: string[],
     title: string,
     userId: string,
     size: number,
@@ -37,6 +39,10 @@ const imageSchema = new Schema<ImageType, ImageModel>(
     url: {
       type: [String],
       required: [true, "URL is required"],
+    },
+    keys: {
+      type: [String],
+      required: [true, "Keys are required"],
     },
     title: {
       type: String,
@@ -63,6 +69,7 @@ const imageSchema = new Schema<ImageType, ImageModel>(
 
 imageSchema.statics.createImage = async (
   url: string[],
+  keys: string[],
   title: string,
   userId: string,
   size: number,
@@ -70,10 +77,11 @@ imageSchema.statics.createImage = async (
 ): Promise<ImageType> => {
   title = title.trim();
 
-  if (!url || !title || !userId || !size || !mimeType) {
+  if (!url || !keys || !title || !userId || !size || !mimeType) {
     throw new AppError(400, "A required field is missing", {
       fields: {
         url: !url ? 0 : 1,
+        keys: !keys ? 0 : 1,
         title: !title ? 0 : 1,
         userId: !userId ? 0 : 1,
         size: !size ? 0 : 1,
@@ -110,6 +118,7 @@ imageSchema.statics.createImage = async (
 
   const image = await Image.create({
     url,
+    keys,
     title,
     userId,
     size,
