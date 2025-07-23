@@ -79,65 +79,92 @@ const Header = () => {
     <header className="bg-card/80 sticky top-0 z-50 border-b backdrop-blur-sm">
       <div className="container mx-auto flex items-center justify-between px-4 py-4">
         <div className="flex items-center space-x-2">
-          <Link href={"/"} className="flex items-center space-x-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500 to-pink-500">
-              {mounted && theme === "dark" ? (
-                <img
-                  src="/icon-white.svg"
-                  alt="Gallery App Logo"
-                  className="h-5 w-5"
-                  width={20}
-                  height={20}
-                />
-              ) : (
-                <img
-                  src="/icon-black.svg"
-                  alt="Gallery App Logo"
-                  className="h-5 w-5"
-                  width={20}
-                  height={20}
-                />
-              )}
+          {user.username ? (
+            <div className="flex items-center space-x-2 cursor-default select-none">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500 to-pink-500">
+                {mounted && theme === "dark" ? (
+                  <img
+                    src="/icon-white.svg"
+                    alt="voidbg logo"
+                    className="h-5 w-5"
+                    width={20}
+                    height={20}
+                  />
+                ) : (
+                  <img
+                    src="/icon-black.svg"
+                    alt="voidbg logo"
+                    className="h-5 w-5"
+                    width={20}
+                    height={20}
+                  />
+                )}
+              </div>
+              <span className="text-xl font-bold">voidbg</span>
             </div>
-            <span className="text-xl font-bold">PhotoCut Gallery</span>
-          </Link>
+          ) : (
+            <Link href={"/"} className="flex items-center space-x-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500 to-pink-500">
+                {mounted && theme === "dark" ? (
+                  <img
+                    src="/icon-white.svg"
+                    alt="voidbg logo"
+                    className="h-5 w-5"
+                    width={20}
+                    height={20}
+                  />
+                ) : (
+                  <img
+                    src="/icon-black.svg"
+                    alt="voidbg logo"
+                    className="h-5 w-5"
+                    width={20}
+                    height={20}
+                  />
+                )}
+              </div>
+              <span className="text-xl font-bold">voidbg</span>
+            </Link>
+          )}
         </div>
         <nav className="flex items-center space-x-4">
           <div className="hidden items-center space-x-6 md:flex">
-            <Link
-              href="#features"
-              className="text-muted-foreground hover:text-primary text-sm font-medium transition-colors"
-            >
-              Features
-            </Link>
-            <Link
-              href="#gallery"
-              className="text-muted-foreground hover:text-primary text-sm font-medium transition-colors"
-            >
-              Gallery
-            </Link>
             {user.username ? (
               <div className="flex items-center space-x-4">
                 <span className="text-sm font-medium">Hi, {user.username}</span>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-slate-700 text-slate-300 hover:bg-slate-800"
+                  className="border-border text-foreground hover:bg-muted"
                   onClick={handleLogout}
                 >
                   Sign Out
                 </Button>
               </div>
             ) : (
-              <Link href="/auth">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-slate-700 text-slate-300 hover:bg-slate-800"
+              <>
+                <Link
+                  href="#features"
+                  className="text-muted-foreground hover:text-primary text-sm font-medium transition-colors"
                 >
-                  Sign In
-                </Button>
-              </Link>
+                  Features
+                </Link>
+                <Link
+                  href="#gallery"
+                  className="text-muted-foreground hover:text-primary text-sm font-medium transition-colors"
+                >
+                  Gallery
+                </Link>
+                <Link href="/auth">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-border text-foreground hover:bg-muted"
+                  >
+                    Sign In
+                  </Button>
+                </Link>
+              </>
             )}
           </div>
           <ModeToggle />

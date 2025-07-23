@@ -1,7 +1,7 @@
-# Gallery app with auto BG removal [Final Semester Project]
+# voidbg [Final Semester Project]
 
 ## Project Overview
-A modern web application that allows users to manage their photo gallery with an intelligent background removal feature. Users can upload, organize, and enhance their images with automatic background removal capabilities.
+A modern web application that allows users to manage their photo gallery with an intelligent background removal feature. Users can upload, organize, and enhance their images with automatic background removal capabilities using voidbg.
 
 ## TODO List
 

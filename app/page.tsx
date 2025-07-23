@@ -64,7 +64,7 @@ const page = () => {
                   AI-Powered Web Gallery
                 </Badge>
                 <h1 className="text-4xl font-bold tracking-tight md:text-6xl">
-                  Your gallery,
+                  Your voidbg,
                   <span className="from-primary to-chart-1 bg-gradient-to-r bg-clip-text text-transparent">
                     {" "}
                     perfected
@@ -73,14 +73,14 @@ const page = () => {
                 <p className="text-muted-foreground max-w-lg text-xl">
                   Upload, organize, and transform your photos with AI-powered
                   background removal. Create stunning galleries that showcase
-                  your work beautifully.
+                  your work beautifully with voidbg.
                 </p>
               </div>
 
               <div className="flex flex-col gap-4 sm:flex-row">
                 <Button
                   size="lg"
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700"
+                  className="text-foreground bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                 >
                   <Link href={"/auth"} className="flex">
                     <Upload className="mr-2 h-4 w-4" />
@@ -89,17 +89,17 @@ const page = () => {
                 </Button>
               </div>
 
-              <div className="flex items-center space-x-6 text-sm text-slate-400">
+              <div className="text-foreground flex items-center space-x-6 text-sm">
                 <div className="flex items-center space-x-1">
-                  <div className="h-2 w-2 rounded-full bg-blue-400"></div>
+                  <div className="bg-primary h-2 w-2 rounded-full"></div>
                   <span>Easy to use</span>
                 </div>
                 <div className="flex items-center space-x-1">
-                  <div className="h-2 w-2 rounded-full bg-purple-400"></div>
+                  <div className="bg-accent h-2 w-2 rounded-full"></div>
                   <span>Cloud storage</span>
                 </div>
                 <div className="flex items-center space-x-1">
-                  <div className="h-2 w-2 rounded-full bg-green-400"></div>
+                  <div className="bg-secondary h-2 w-2 rounded-full"></div>
                   <span>Completely free</span>
                 </div>
               </div>
@@ -119,14 +119,14 @@ const page = () => {
           <div className="mb-16 space-y-4 text-center">
             <Badge
               variant="secondary"
-              className="border-slate-700 bg-slate-800 text-slate-300"
+              className="border-border bg-muted text-muted-foreground"
             >
               Features
             </Badge>
-            <h2 className="text-3xl font-bold text-white md:text-4xl">
+            <h2 className="text-foreground text-3xl font-bold md:text-4xl">
               Everything you need for perfect galleries
             </h2>
-            <p className="mx-auto max-w-2xl text-xl text-slate-300">
+            <p className="text-muted-foreground mx-auto max-w-2xl text-xl">
               Powerful AI technology meets intuitive gallery management to
               showcase your photos beautifully.
             </p>
@@ -136,7 +136,7 @@ const page = () => {
             <Card className="bg-card border-border hover:bg-card/80 transition-colors">
               <CardHeader>
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500 to-purple-600">
-                  <Zap className="h-6 w-6 text-white" />
+                  <Zap className="text-foreground h-6 w-6" />
                 </div>
                 <CardTitle>AI Background Removal</CardTitle>
                 <CardDescription className="text-muted-foreground">
@@ -149,7 +149,7 @@ const page = () => {
             <Card className="bg-card border-border hover:bg-card/80 transition-colors">
               <CardHeader>
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-pink-500 to-pink-600">
-                  <Shield className="h-6 w-6 text-white" />
+                  <Shield className="text-foreground h-6 w-6" />
                 </div>
                 <CardTitle>Smart Gallery Organization</CardTitle>
                 <CardDescription className="text-muted-foreground">
@@ -162,7 +162,7 @@ const page = () => {
             <Card className="bg-card border-border hover:bg-card/80 transition-colors">
               <CardHeader>
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600">
-                  <Palette className="h-6 w-6 text-white" />
+                  <Palette className="text-foreground h-6 w-6" />
                 </div>
                 <CardTitle>Batch Processing</CardTitle>
                 <CardDescription className="text-muted-foreground">
@@ -175,7 +175,7 @@ const page = () => {
             <Card className="bg-card border-border hover:bg-card/80 transition-colors">
               <CardHeader>
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-green-500 to-green-600">
-                  <MousePointer className="h-6 w-6 text-white" />
+                  <MousePointer className="text-foreground h-6 w-6" />
                 </div>
                 <CardTitle>Smart Edge Detection</CardTitle>
                 <CardDescription className="text-muted-foreground">
@@ -188,7 +188,7 @@ const page = () => {
             <Card className="bg-card border-border hover:bg-card/80 transition-colors">
               <CardHeader>
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-orange-500 to-orange-600">
-                  <Sparkles className="h-6 w-6 text-white" />
+                  <Sparkles className="text-foreground h-6 w-6" />
                 </div>
                 <CardTitle>Shareable Galleries</CardTitle>
                 <CardDescription className="text-muted-foreground">
@@ -201,7 +201,7 @@ const page = () => {
             <Card className="bg-card border-border hover:bg-card/80 transition-colors">
               <CardHeader>
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-teal-500 to-teal-600">
-                  <Upload className="h-6 w-6 text-white" />
+                  <Upload className="text-foreground h-6 w-6" />
                 </div>
                 <CardTitle>Cloud Storage</CardTitle>
                 <CardDescription className="text-muted-foreground">
@@ -222,19 +222,19 @@ const page = () => {
         <div className="container mx-auto max-w-4xl text-center">
           <div className="space-y-8">
             <div className="space-y-4">
-              <h2 className="text-3xl font-bold text-white md:text-4xl">
+              <h2 className="text-foreground text-3xl font-bold md:text-4xl">
                 Ready to create stunning galleries?
               </h2>
-              <p className="mx-auto max-w-2xl text-xl text-purple-100">
+              <p className="text-muted-foreground mx-auto max-w-2xl text-xl">
                 Join thousands of photographers, designers, and content creators
-                who use PhotoCut Gallery to showcase their work beautifully.
+                who use voidbg to showcase their work beautifully.
               </p>
             </div>
 
             <div className="mx-auto flex max-w-md flex-col justify-center gap-4 sm:flex-row">
               <Button
                 size="lg"
-                className="flex-1 bg-white text-purple-600 hover:bg-gray-50"
+                className="bg-card text-primary hover:bg-muted flex-1"
               >
                 <Upload className="mr-2 h-4 w-4" />
                 Get Started Free
@@ -242,24 +242,24 @@ const page = () => {
               <Button
                 size="lg"
                 variant="outline"
-                className="flex-1 border-purple-300 text-purple-100 hover:bg-purple-800/50"
+                className="border-border text-foreground hover:bg-muted flex-1"
               >
                 View Examples
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
 
-            <div className="flex items-center justify-center space-x-8 text-sm text-purple-200">
+            <div className="text-muted-foreground flex items-center justify-center space-x-8 text-sm">
               <div className="flex items-center space-x-2">
-                <div className="h-2 w-2 rounded-full bg-blue-400"></div>
+                <div className="bg-primary h-2 w-2 rounded-full"></div>
                 <span>No credit card needed</span>
               </div>
               <div className="flex items-center space-x-2">
-                <div className="h-2 w-2 rounded-full bg-green-400"></div>
+                <div className="bg-secondary h-2 w-2 rounded-full"></div>
                 <span>100% free forever</span>
               </div>
               <div className="flex items-center space-x-2">
-                <div className="h-2 w-2 rounded-full bg-yellow-400"></div>
+                <div className="bg-destructive h-2 w-2 rounded-full"></div>
                 <span>Start in seconds</span>
               </div>
             </div>
@@ -274,9 +274,9 @@ const page = () => {
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500 to-pink-500">
-                  <Sparkles className="h-5 w-5 text-white" />
+                  <Sparkles className="text-foreground h-5 w-5" />
                 </div>
-                <span className="text-xl font-bold">PhotoCut Gallery</span>
+                <span className="text-xl font-bold">voidbg</span>
               </div>
               <p className="text-muted-foreground text-sm">
                 The most intuitive web gallery with AI-powered background
@@ -285,12 +285,12 @@ const page = () => {
             </div>
 
             <div>
-              <h3 className="mb-4 font-semibold text-white">Product</h3>
-              <ul className="space-y-2 text-sm text-slate-400">
+              <h3 className="text-foreground mb-4 font-semibold">Product</h3>
+              <ul className="text-foreground space-y-2 text-sm">
                 <li>
                   <Link
                     href="#"
-                    className="transition-colors hover:text-purple-400"
+                    className="hover:text-primary transition-colors"
                   >
                     Features
                   </Link>
@@ -298,7 +298,7 @@ const page = () => {
                 <li>
                   <Link
                     href="#"
-                    className="transition-colors hover:text-purple-400"
+                    className="hover:text-primary transition-colors"
                   >
                     Pricing
                   </Link>
@@ -306,7 +306,7 @@ const page = () => {
                 <li>
                   <Link
                     href="#"
-                    className="transition-colors hover:text-purple-400"
+                    className="hover:text-primary transition-colors"
                   >
                     API
                   </Link>
@@ -315,12 +315,12 @@ const page = () => {
             </div>
 
             <div>
-              <h3 className="mb-4 font-semibold text-white">Support</h3>
-              <ul className="space-y-2 text-sm text-slate-400">
+              <h3 className="text-foreground mb-4 font-semibold">Support</h3>
+              <ul className="text-foreground space-y-2 text-sm">
                 <li>
                   <Link
                     href="#"
-                    className="transition-colors hover:text-purple-400"
+                    className="hover:text-primary transition-colors"
                   >
                     Help Center
                   </Link>
@@ -328,7 +328,7 @@ const page = () => {
                 <li>
                   <Link
                     href="#"
-                    className="transition-colors hover:text-purple-400"
+                    className="hover:text-primary transition-colors"
                   >
                     Contact
                   </Link>
@@ -336,7 +336,7 @@ const page = () => {
                 <li>
                   <Link
                     href="#"
-                    className="transition-colors hover:text-purple-400"
+                    className="hover:text-primary transition-colors"
                   >
                     Community
                   </Link>
@@ -345,12 +345,12 @@ const page = () => {
             </div>
 
             <div>
-              <h3 className="mb-4 font-semibold text-white">Company</h3>
-              <ul className="space-y-2 text-sm text-slate-400">
+              <h3 className="text-foreground mb-4 font-semibold">Company</h3>
+              <ul className="text-foreground space-y-2 text-sm">
                 <li>
                   <Link
                     href="#"
-                    className="transition-colors hover:text-purple-400"
+                    className="hover:text-primary transition-colors"
                   >
                     About
                   </Link>
@@ -358,7 +358,7 @@ const page = () => {
                 <li>
                   <Link
                     href="#"
-                    className="transition-colors hover:text-purple-400"
+                    className="hover:text-primary transition-colors"
                   >
                     Blog
                   </Link>
@@ -366,7 +366,7 @@ const page = () => {
                 <li>
                   <Link
                     href="#"
-                    className="transition-colors hover:text-purple-400"
+                    className="hover:text-primary transition-colors"
                   >
                     Privacy
                   </Link>
@@ -375,10 +375,9 @@ const page = () => {
             </div>
           </div>
 
-          <div className="mt-8 border-t border-slate-800 pt-8 text-center text-sm text-slate-400">
+          <div className="text-foreground mt-8 border-t border-slate-800 pt-8 text-center text-sm">
             <p>
-              &copy; {new Date().getFullYear()} PhotoCut Gallery. All rights
-              reserved.
+              &copy; {new Date().getFullYear()} voidbg. All rights reserved.
             </p>
           </div>
         </div>

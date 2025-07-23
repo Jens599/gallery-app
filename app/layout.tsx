@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import Header from "@/components/Header";
+
 import Providers from "./providers";
+import Header from "@/components/header";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,8 +17,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Jens Gallery",
-  description: "A modern Gallery application",
+  title: "voidbg",
+  description: "A modern web application for AI-powered background removal and photo galleries.",
   icons: {
     icon: [
       {
