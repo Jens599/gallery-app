@@ -7,10 +7,11 @@ interface RemoveBgPayload {
   onUploadComplete: (file: File) => void;
 }
 
-interface AddUrlPayload {
+type AddUrlPayload = {
   imageId: string;
   url: string;
-}
+  key: string;
+};
 
 const removeBackground = async (
   payload: RemoveBgPayload,
@@ -97,7 +98,25 @@ export const useRemoveBackground = () => {
     Error,
     { payload: AddUrlPayload; token: string }
   >({
-    mutationFn: ({ payload, token }) => addUrlToImage(payload, token),
+    mutationFn: async ({
+      payload,
+      token,
+    }: {
+      payload: { imageId: string; url: string; key: string };
+      token: string;
+    }) => {
+      const response = await fetch(IMAGE_URLS.ADD_URL(payload.imageId), {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ url: payload.url, key: payload.key }),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to add URL");
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["images"] });
     },
