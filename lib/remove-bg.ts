@@ -18,22 +18,32 @@ const removeBackground = async (
   token: string,
 ): Promise<void> => {
   try {
-    const imageResponse = await fetch(payload.imageUrl);
-    if (!imageResponse.ok) {
-      throw new Error("Failed to fetch the image for background removal.");
-    }
-    const imageBlob = await imageResponse.blob();
-
-    const formData = new FormData();
-    formData.append("image", imageBlob, payload.imageTitle);
-
     const removeBgResponse = await fetch(EXTERNAL_SERVICES.BG_REMOVAL, {
       method: "POST",
-      body: formData,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+
+      body: JSON.stringify({
+        image: payload.imageUrl,
+      }),
     });
 
     if (!removeBgResponse.ok) {
-      throw new Error("Failed to remove background from the image.");
+      const errorText = await removeBgResponse.text();
+      let errorMessage = `Failed to remove background from the image. Status: ${removeBgResponse.status}`;
+      try {
+        const errorJson = JSON.parse(errorText);
+        if (errorJson.detail) {
+          errorMessage += ` Detail: ${JSON.stringify(errorJson.detail)}`;
+        } else if (errorJson.message) {
+          errorMessage += ` Message: ${errorJson.message}`;
+        }
+      } catch (e) {
+        errorMessage += ` Response: ${errorText}`;
+      }
+      throw new Error(errorMessage);
     }
 
     const processedImageBlob = await removeBgResponse.blob();
@@ -47,6 +57,7 @@ const removeBackground = async (
 
     payload.onUploadComplete(processedImageFile);
   } catch (error) {
+    console.error("Error in removeBackground:", error);
     throw error;
   }
 };

@@ -194,7 +194,7 @@ const GalleryPage = () => {
 
   const handleRemoveBg = (image: Image) => {
     removeBg({
-      imageUrl: image.url[0],
+      imageUrl: image.url[1],
       imageTitle: image.title,
       onUploadComplete: async (file: File) => {
         setIsUploading(true);
