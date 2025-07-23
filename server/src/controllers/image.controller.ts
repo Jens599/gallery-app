@@ -2,6 +2,9 @@ import { Request, Response, NextFunction } from "express";
 import { Image } from "../models/image.model";
 import { AppError } from "../middleware/errorHandler";
 import { Types } from "mongoose";
+import { UTApi } from "uploadthing/server";
+
+export const utapi = new UTApi();
 
 export const createImage = async (
   req: Request,
@@ -9,7 +12,7 @@ export const createImage = async (
   next: NextFunction,
 ) => {
   try {
-    const { url, title, size, mimeType } = req.body;
+    const { url, keys, title, size, mimeType } = req.body;
 
     if (!req.user?._id) {
       return next(new AppError(401, "User not authenticated"));
@@ -17,6 +20,7 @@ export const createImage = async (
 
     const image = await Image.createImage(
       url,
+      keys,
       title,
       req.user._id.toString(),
       size,
@@ -113,6 +117,11 @@ export const deleteImage = async (
       return next(new AppError(403, "Not authorized to delete this image"));
     }
 
+    // Delete from Uploadthing
+    if (image.keys && image.keys.length > 0) {
+      await utapi.deleteFiles(image.keys);
+    }
+
     await image.deleteOne();
 
     res.status(204).end();
@@ -168,6 +177,12 @@ export const updateURL = async (
       return next(new AppError(401, "User not authenticated"));
     }
 
+    const { url, key } = req.body;
+
+    if (!url || !key) {
+      return next(new AppError(400, "URL and key are required"));
+    }
+
     const existingImage = await Image.findById(req.params.id);
 
     if (!existingImage) {
@@ -180,7 +195,7 @@ export const updateURL = async (
 
     const image = await Image.findByIdAndUpdate(
       req.params.id,
-      { $push: { url: req.body.url } },
+      { $push: { url: url, keys: key } },
       {
         new: true,
         runValidators: true,
