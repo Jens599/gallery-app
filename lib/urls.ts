@@ -3,7 +3,7 @@
  */
 
 // API Base URLs
-export const API_BASE_URL = "http://localhost:3001/api";
+export const API_BASE_URL = "/api";
 
 // Auth Endpoints
 export const AUTH_URLS = {
@@ -22,7 +22,10 @@ export const IMAGE_URLS = {
 } as const;
 
 export const EXTERNAL_SERVICES = {
-  BG_REMOVAL: "http://localhost:5000/predict",
+  BG_REMOVAL:
+    process.env.NODE_ENV === "production"
+      ? process.env.NEXT_PUBLIC_BG_REMOVAL_URL
+      : "http://localhost:5000/predict",
 };
 
 // Debug Endpoints
