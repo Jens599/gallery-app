@@ -1,0 +1,39 @@
+meta {
+  name: delete-user
+  type: http
+  seq: 4
+}
+
+delete {
+  url: http://localhost:3001/api/auth/delete
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
+
+tests {
+  test("should return 200 status code", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("should return success response with deletion details", function() {
+    const body = res.getBody();
+    expect(body.status).to.equal("success");
+    expect(body.message).to.equal("User and associated images successfully deleted");
+    expect(body.data).to.exist;
+    expect(body.data.deletedUser).to.exist;
+    expect(body.data.deletedUser.id).to.exist;
+    expect(body.data.deletedUser.username).to.exist;
+    expect(body.data.deletedUser.email).to.exist;
+    expect(body.data.imagesDeleted).to.be.a("number");
+  });
+  
+  // Clean up environment variables
+    bru.setEnvVar("token", null);
+  bru.setEnvVar("userId", null);
+  bru.setEnvVar("imageId", null);
+  
+}

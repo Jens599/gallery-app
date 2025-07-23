@@ -1,0 +1,21 @@
+meta {
+  name: add-url
+  type: http
+  seq: 6
+}
+
+patch {
+  url: http://localhost:3001/api/image/addURL/{{imageId}}
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
+
+body:json {
+  {
+    "url":"https://example.com/test-image_2.jpg"
+  }
+}

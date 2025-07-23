@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Gallery App Tests",
+  "type": "collection",
+  "presets": {
+    "requestType": "http",
+    "requestUrl": "http://localhost:3001/"
+  }
+}

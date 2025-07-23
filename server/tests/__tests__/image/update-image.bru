@@ -1,0 +1,41 @@
+meta {
+  name: update-image
+  type: http
+  seq: 8
+}
+
+put {
+  url: http://localhost:3001/api/images/{{imageId}}
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
+
+body:json {
+  {
+    "title": "Updated Test Image",
+    "description": "Updated test image description"
+  }
+}
+
+tests {
+  test("should return 200 status code", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("should return success response with updated image data", function() {
+    const body = res.getBody();
+    expect(body.status).to.equal("success");
+    expect(body.data.image).to.exist;
+    expect(body.data.image._id).to.equal(bru.getEnvVar("imageId"));
+    expect(body.data.image.title).to.equal("Updated Test Image");
+    expect(body.data.image.description).to.equal("Updated test image description");
+    expect(body.data.image.userId).to.equal(bru.getEnvVar("userId"));
+    expect(body.data.image.url).to.exist;
+    expect(body.data.image.createdAt).to.exist;
+    expect(body.data.image.updatedAt).to.exist;
+  });
+}
