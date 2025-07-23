@@ -71,6 +71,11 @@ const Signup = () => {
 
   useEffect(() => {
     if (error?.message) {
+      // Set error in form for AuthForm to display
+      form.setError("root", { message: error.message });
+      // Clear password fields for security
+      form.setValue("password", "");
+      form.setValue("confirm_password", "");
       toast.error("Uh oh! Something went wrong.", {
         duration: 5000,
         description: error.message,
@@ -90,6 +95,7 @@ const Signup = () => {
           toast.success("Signed up successfully!", {
             duration: 5000,
           });
+          router.push("/gallery");
         },
       },
     );

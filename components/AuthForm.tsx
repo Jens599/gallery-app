@@ -25,6 +25,7 @@ import { useState } from "react";
 import { z } from "zod";
 import { UseFormReturn, Path } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import React from "react";
 
 type AuthFormProps<T extends z.ZodType> = {
   formName: string;
@@ -41,8 +42,22 @@ const AuthForm = <T extends z.ZodType>({
   isPending,
   onSubmit,
 }: AuthFormProps<T>) => {
-  const [showPassword, setShowPassword] = useState(false);
+  // Independent show/hide state for each password field
+  const [showPassword, setShowPassword] = useState<{ [key: string]: boolean }>({});
+  // Server-side error state
   const [authError, setAuthError] = useState<string | null>(null);
+
+  // Helper to toggle password visibility for a specific field
+  const handleTogglePassword = (field: string) => {
+    setShowPassword((prev) => ({ ...prev, [field]: !prev[field] }));
+  };
+
+  // Expose setAuthError for parent components (Login/Signup) to set server errors
+  React.useEffect(() => {
+    if (form.formState.errors.root && form.formState.errors.root.message) {
+      setAuthError(form.formState.errors.root.message);
+    }
+  }, [form.formState.errors.root]);
 
   return (
     <Card>
@@ -54,12 +69,12 @@ const AuthForm = <T extends z.ZodType>({
       </CardHeader>
       <CardContent className="space-y-4">
         {authError && (
-          <div className="text-sm text-red-500" role="alert">
+          <div className="text-sm text-red-500" role="alert" aria-live="assertive">
             {authError}
           </div>
         )}
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" aria-label={`${formName} form`}>
             {fields.map((f, i) => (
               <FormField
                 key={`${formName}-${i}`}
@@ -74,25 +89,27 @@ const AuthForm = <T extends z.ZodType>({
                         .replace(/\b\w/g, (char) => char.toUpperCase())}
                     </FormLabel>
                     <FormControl>
-                      {f.name.toString() === "password" ||
-                      f.name.toString() === "confirm_password" ? (
+                      {(f.name.toString() === "password" ||
+                        f.name.toString() === "confirm_password") ? (
                         <div className="relative">
                           <Input
                             placeholder={f.placeholder}
-                            type={showPassword ? "text" : "password"}
+                            type={showPassword[f.name.toString()] ? "text" : "password"}
                             aria-label={`${f.name} input`}
+                            autoComplete={f.name.toString()}
                             {...field}
                           />
                           <button
                             type="button"
                             className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1 hover:bg-red-900"
-                            onClick={() => setShowPassword((prev) => !prev)}
+                            onClick={() => handleTogglePassword(f.name.toString())}
                             aria-label={
-                              showPassword ? "Hide password" : "Show password"
+                              showPassword[f.name.toString()] ? "Hide password" : "Show password"
                             }
-                            aria-pressed={showPassword}
+                            aria-pressed={showPassword[f.name.toString()]}
+                            tabIndex={0}
                           >
-                            {showPassword ? (
+                            {showPassword[f.name.toString()] ? (
                               <EyeOff size={18} aria-hidden="true" />
                             ) : (
                               <Eye size={18} aria-hidden="true" />
@@ -103,6 +120,7 @@ const AuthForm = <T extends z.ZodType>({
                         <Input
                           placeholder={f.placeholder}
                           aria-label={`${f.name} input`}
+                          autoComplete={f.name.toString()}
                           {...field}
                         />
                       )}

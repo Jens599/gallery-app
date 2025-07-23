@@ -104,8 +104,9 @@ export default function GalleryUploader({
           await saveImageMetadata(
             {
               url: [previewResult[0].ufsUrl, originalResult[0].ufsUrl],
-              name: nameWithoutExt,
               key: originalResult[0].key,
+              keys: [previewResult[0].key, originalResult[0].key],
+              name: nameWithoutExt,
               size: originalResult[0].size,
               type: originalResult[0].type,
             },

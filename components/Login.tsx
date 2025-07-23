@@ -29,15 +29,6 @@ const Login = () => {
   const router = useRouter();
   const { mutate: login, isPending, error } = useLogin();
 
-  useEffect(() => {
-    if (error?.message) {
-      toast.error("Uh oh! Something went wrong.", {
-        duration: 5000,
-        description: error.message,
-      });
-    }
-  }, [error]);
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -45,6 +36,19 @@ const Login = () => {
       password: "",
     },
   });
+
+  useEffect(() => {
+    if (error?.message) {
+      // Set error in form for AuthForm to display
+      form.setError("root", { message: error.message });
+      // Clear password field for security
+      form.setValue("password", "");
+      toast.error("Uh oh! Something went wrong.", {
+        duration: 5000,
+        description: error.message,
+      });
+    }
+  }, [error]);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     login(
@@ -54,6 +58,7 @@ const Login = () => {
           toast.success("Logged in successfully!", {
             duration: 5000,
           });
+          router.push("/gallery");
         },
       },
     );
@@ -68,6 +73,7 @@ const Login = () => {
         isPending={isPending}
         fields={fields}
       />
+      <div className="mt-2 text-center"></div>
     </>
   );
 };
