@@ -32,15 +32,26 @@ interface SaveImageMetadataParams {
 }
 
 export async function saveImageMetadata(
-  uploadThingFile: UploadThingFile,
-  token: string,
-): Promise<ImageType> {
-  const payload: ImageCreationPayload = {
-    url: Array.isArray(uploadThingFile.url) ? uploadThingFile.url : [uploadThingFile.url], // Always send as array
-    title: uploadThingFile.name,
-    size: uploadThingFile.size,
-    mimeType: uploadThingFile.type,
-  };
+  {
+    url,
+    key,
+    keys,
+    name,
+    size,
+    type,
+  }: {
+    url: string[];
+    key: string;
+    keys: string[];
+    name: string;
+    size: number;
+    type: string;
+  },
+  token: string | null,
+) {
+  if (!token) {
+    throw new Error("Not authorized");
+  }
 
   const response = await fetch(IMAGE_URLS.BASE, {
     method: "POST",
@@ -48,20 +59,14 @@ export async function saveImageMetadata(
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(payload),
+    body: JSON.stringify({ url, key, keys, title: name, size, mimeType: type }),
   });
 
   if (!response.ok) {
-    const errorData = await response
-      .json()
-      .catch(() => ({ message: "Unknown error" }));
-    throw new Error(
-      `Failed to save image metadata: ${errorData.message || "Server error"}`,
-    );
+    throw new Error("Failed to save image metadata");
   }
 
-  const result = await response.json();
-  return result;
+  return response.json();
 }
 
 export async function updateURL(
@@ -130,7 +135,17 @@ export function useSaveImage() {
   return useMutation<
     ImageType,
     Error,
-    { uploadThingFile: UploadThingFile; token: string }
+    {
+      uploadThingFile: {
+        url: string[];
+        key: string;
+        keys: string[];
+        name: string;
+        size: number;
+        type: string;
+      };
+      token: string;
+    }
   >({
     mutationFn: ({ uploadThingFile, token }) =>
       saveImageMetadata(uploadThingFile, token),
