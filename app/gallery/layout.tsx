@@ -171,10 +171,7 @@ export default function GalleryUploader({
               </svg>
             )}
             <div className="text-card-foreground text-center text-lg font-semibold">
-              Choose files or drag and drop
-            </div>
-            <div className="text-muted-foreground mb-4 text-center text-sm">
-              Image (4MB)
+              Choose files
             </div>
             <input
               id="gallery-upload-input"
@@ -196,7 +193,7 @@ export default function GalleryUploader({
             >
               {uploading
                 ? "Uploading..."
-                : "Upload Selected Images (Original + WebP)"}
+                : "Upload Selected Images"}
             </Button>
             {selectedFiles.length > 0 && (
               <div className="mt-4 flex flex-wrap justify-center gap-2">
