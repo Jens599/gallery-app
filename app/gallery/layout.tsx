@@ -204,7 +204,8 @@ export default function GalleryUploader({
         </div>
         {children}
         <Button
-          className="fixed right-10 bottom-10 size-10 scale-150 rounded-full"
+          className={`fixed right-10 bottom-10 size-10 scale-150 rounded-full ${window.scrollY === 0 ? "hidden" : ""
+            }`}
           onClick={() => {
             window.scrollTo({
               top: 0,

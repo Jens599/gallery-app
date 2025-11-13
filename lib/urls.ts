@@ -21,12 +21,15 @@ export const IMAGE_URLS = {
   BY_ID: (id: string) => `${API_BASE_URL}/images/${id}`,
 } as const;
 
+// Background removal service configuration
 export const EXTERNAL_SERVICES = {
-  BG_REMOVAL:
-    process.env.NODE_ENV === "production"
-      ? process.env.NEXT_PUBLIC_BG_REMOVAL_URL
-      : "http://localhost:5000/predict",
-};
+  get BG_REMOVAL(): string {
+    if (process.env.NEXT_PUBLIC_BG_REMOVAL_URL) {
+      return process.env.NEXT_PUBLIC_BG_REMOVAL_URL;
+    }
+    return "http://localhost:5000/predict";
+  }
+} as const;
 
 // Debug Endpoints
 export const DEBUG_URLS = {

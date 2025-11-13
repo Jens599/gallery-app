@@ -95,11 +95,6 @@ const GRID_SIZE_OPTIONS = [
   { value: "large", label: "Large" },
 ];
 
-const VIEW_MODE_OPTIONS = [
-  { value: "original", label: "Original" },
-  { value: "masked", label: "Masked" },
-  { value: "bgremoved", label: "BG Removed" },
-];
 
 const GalleryPage = () => {
   const queryClient = useQueryClient();
@@ -353,26 +348,6 @@ const GalleryPage = () => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="flex items-center gap-2">
-          <label className="font-medium">View:</label>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="w-[120px] justify-between">
-                {VIEW_MODE_OPTIONS.find(opt => opt.value === viewMode)?.label}
-                <ChevronDown className="w-4 h-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuRadioGroup value={viewMode} onValueChange={setViewMode}>
-                {VIEW_MODE_OPTIONS.map(opt => (
-                  <DropdownMenuRadioItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </DropdownMenuRadioItem>
-                ))}
-              </DropdownMenuRadioGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
       </div>
 
       {filteredImages.length === 0 ? (
@@ -387,21 +362,12 @@ const GalleryPage = () => {
             gridSize === "small"
               ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3"
               : gridSize === "large"
-              ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-8"
-              : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+                ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
           }
         >
           {filteredImages.map((image) => {
             let displaySrc = image.url[0];
-            if (viewMode === "bgremoved" && image.url.length === 3) {
-              displaySrc = image.url[2];
-            } else if (viewMode === "masked" && image.url.length === 3) {
-              // Masked preview: generate on the fly using applyImageMask
-              // We'll use a placeholder and lazy-load the mask
-              // For now, show original until mask is loaded
-              // (For full implementation, see below for async mask loading)
-              displaySrc = image.url[1];
-            }
             return (
               <Dialog
                 key={image._id}
@@ -420,8 +386,8 @@ const GalleryPage = () => {
                         gridSize === "small"
                           ? "h-28 w-full object-cover"
                           : gridSize === "large"
-                          ? "h-72 w-full object-cover"
-                          : "h-48 w-full object-cover"
+                            ? "h-72 w-full object-cover"
+                            : "h-48 w-full object-cover"
                       }
                       loading="lazy"
                     />
@@ -431,7 +397,7 @@ const GalleryPage = () => {
                         <Badge variant="secondary" title="BG Removed"><Eraser className="w-3 h-3 mr-1 inline" />BG Removed</Badge>
                       )}
                       {image.url.length === 3 && (
-                        <Badge variant="outline" title="Masked Preview"><Sparkles className="w-3 h-3 mr-1 inline" />Masked</Badge>
+                        <Badge variant="mask" title="Masked Preview"><Sparkles className="w-3 h-3 mr-1 inline" />Masked</Badge>
                       )}
                     </div>
                     <div className="p-4">
